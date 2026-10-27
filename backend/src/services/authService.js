@@ -137,11 +137,7 @@ const refreshTokenService = async (refreshToken) => {
 const authUserService = async (id) => {
 
   try {
-    const user = await userModel
-      .findById(id)
-      .select(
-        "-password -refreshToken -__v -status -isDelete -createdAt -updatedAt",
-      );
+    const user = await usersModel.findById(id).select("-password -refreshToken -__v -status -isDelete -createdAt -updatedAt",);
     if (!user) {
       throw new ApiError(400, "Người dùng không tồn tại");
     }
@@ -156,4 +152,5 @@ export {
   registerService,
   logoutService,
   refreshTokenService,
+  authUserService,
 };

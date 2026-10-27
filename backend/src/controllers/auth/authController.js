@@ -1,15 +1,17 @@
-import { loginService, registerService } from "../../services/authService.js";
+import { 
+  loginService, 
+  registerService, 
+  logoutService, 
+  refreshTokenService, 
+  authUserService 
+} from "../../services/authService.js";
 import ApiError from "../../utils/ApiError.js";
 
 const loginController = async (req, res, next) => {
 
   try {
-    // Nhận dữ liệu email, password đầu vào
     const { email, password } = req.body;
-    // Gọi hàm login trong service
     const user = await loginService(email, password);
-
-    // trả về dữ liệu dạng json
     return res.status(200).json({
       statusCode: 200,
       success: true,
