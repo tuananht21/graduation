@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "path";
 import connect from "./config/mongodb.js";
 import APIs_V1 from "./routes/v1/index.js";
-import errorHandlingMiddleware from "./middlewares/errorHandingMiddleware.js";
+import errorHandlingMiddleware from "./middlewares/errorHandlingMiddleware.js";
 
 const app = express();
 const port = env.PORT;
