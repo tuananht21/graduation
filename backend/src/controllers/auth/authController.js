@@ -1,5 +1,5 @@
-import { loginService, registerService } from "../../services/authService";
-import ApiError from "../../utils/ApiError";
+import { loginService, registerService } from "../../services/authService.js";
+import ApiError from "../../utils/ApiError.js";
 
 const loginController = async (req, res, next) => {
 

@@ -7,5 +7,5 @@ const userSchema = new mongoose.Schema(usersMigration, {
 
 const userModel = mongoose.model("users", userSchema);
 
-export default userSchema;
+export default userModel;
 //
