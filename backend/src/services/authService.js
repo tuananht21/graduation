@@ -56,9 +56,9 @@ const loginService = async (email, password) => {
 };
 
 const registerService = async (userName, email, password) => {
-  
+
   try {
-    
+
     // 1. Kiểm tra email đã tồn tại
     const isUser = await usersModel.findOne({ email });
     if (isUser) {
@@ -76,11 +76,84 @@ const registerService = async (userName, email, password) => {
       },
     };
   } catch (error) {
-    throw new ApiError(400,error || "Đã xảy ra lỗi trong quá trình đăng ký!");
+    throw new ApiError(400, error || "Đã xảy ra lỗi trong quá trình đăng ký!");
   }
 };
 
-export { 
-  loginService ,
-  registerService
+const logoutService = async (userId) => {
+
+  try {
+    const isUser = await usersModel.findById(userId);
+
+    if (!isUser) {
+      throw new ApiError(400, "Người dùng không hợp lệ hoặc đã đăng xuất!");
+    }
+
+    // nếu lưu redis thì chỉ xóa thôi
+    await redis.del(`refresh:${userId}`);
+
+    return {
+      message: "Logout successfully",
+    };
+  } catch (error) {
+    throw new ApiError(
+      400,
+      error || "Đã xảy ra lỗi trong quá trình đăng xuất!",
+    );
+  }
+};
+
+const refreshTokenService = async (refreshToken) => {
+
+  try {
+    const decoded = decodedJWT(refreshToken, "refresh_token");
+    const userId = decoded.id;
+
+    const storedToken = await redis.get(`refresh:${userId}`);
+    if (!storedToken) {
+      throw new ApiError(401, "Token không hợp lệ hoặc đã hết hạn");
+    }
+    if (storedToken !== refreshToken) {
+      throw new ApiError(401, "Refresh token không hợp lệ");
+    }
+
+    const accessToken = encodedJWT(accessToken, "access_token");
+
+    return accessToken;
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      const decoded = decodedJWT(refreshToken, "refresh_token");
+
+      await redis.del(`refresh:${decoded.id}`);
+      throw new ApiError(400, "Refresh token đã hết hạn");
+    }
+    throw new ApiError(
+      400,
+      error || "Đã xảy ra lỗi trong quá trình refresh token!",
+    );
+  }
+};
+
+const authUserService = async (id) => {
+
+  try {
+    const user = await userModel
+      .findById(id)
+      .select(
+        "-password -refreshToken -__v -status -isDelete -createdAt -updatedAt",
+      );
+    if (!user) {
+      throw new ApiError(400, "Người dùng không tồn tại");
+    }
+    return user;
+  } catch (error) {
+    throw new ApiError(400, error || "Đã xảy ra lỗi trong quá trình xác thực!");
+  }
+};
+
+export {
+  loginService,
+  registerService,
+  logoutService,
+  refreshTokenService,
 };

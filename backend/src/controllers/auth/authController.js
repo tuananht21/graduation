@@ -43,4 +43,63 @@ const registerController = async (req, res, next) => {
   }
 };
 
-export { loginController, registerController };
+const logoutController = async (req, res, next) => {
+
+  try {
+    const { id } = req.user;
+    const user = await logoutService(id);
+    return res.status(200).json({
+      statusCode: 200,
+      success: true,
+      message: "Đăng xuất thành công!",
+      data: user,
+    });
+  } catch (error) {
+    next(new ApiError(400, error.message || error));
+  };
+};
+
+const refreshTokenController = async (req, res, next) => {
+
+  try {
+
+    const { refreshtoken } = req.body;
+    const accessToken = await refreshTokenService(refreshtoken);
+    res.status(200).json({
+      statusCode: 200,
+      success: true,
+      accessToken,
+      message: 'Refresh token hợp lệ',
+    });
+
+  } catch (error) {
+    next(new ApiError(400, error.message || error));
+  }
+}
+
+const authUserController = async (req, res, next) => {
+
+  try {
+
+    const { id } = req.user;
+    const user = await authUserService(id);
+    res.status(200).json({
+      statusCode: 200,
+      success: true,
+      data: user,
+      message: 'Xác thực thành công!',
+    });
+
+  } catch (error) {
+    next(new ApiError(400, error.message || error));
+  }
+
+}
+
+export { 
+  loginController, 
+  registerController, 
+  logoutController, 
+  refreshTokenController,
+  authUserController,
+};
