@@ -4,7 +4,7 @@ import { loginController, registerController } from '../../controllers/auth/auth
 
 const authRouter = express.Router();
 
-authRouter.route('/login').post(loginValidation,loginController);
-authRouter.route('/register').post(registerValidation,registerController);
+authRouter.route('/login').post(loginValidation, loginController);
+authRouter.route('/register').post(registerValidation, registerController);
 
 export default authRouter;
